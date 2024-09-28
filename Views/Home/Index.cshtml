@@ -2,20 +2,26 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="jumbotron text-center">
-    <h1><i class="fas fa-gamepad" style="font-size:40px;"></i>  Welcome to the Game Review App</h1>
+<div class="jumbotron text-center bg-dark text-white">
+    <h1><i class="fas fa-gamepad" style="font-size:40px;"></i> Welcome to the Game Review App</h1>
     <p>Discover and review your favorite games!</p>
 </div>
-<article>
+
+<article class="mt-4">
     <div class="row">
         <div class="col-md-6">
-            <h3>Top Rated Games</h3>
-            <p>See what games other users are loving!</p>
+            <div class="card bg-light p-3">
+                <h3>Top Rated Games</h3>
+                <p class="text-dark">See what games other users are loving!</p>
+            </div>
         </div>
         <div class="col-md-6">
-            <h3>New Reviews</h3>
-            <p>Check out the latest reviews from our community.</p>
-            <p class="text-danger">Warning: Some reviews may contain spoilers!</p>
+            <div class="card bg-light p-3">
+                <h3>New Reviews</h3>
+                <p>Check out the latest reviews from our community.</p>
+                <p class="text-danger">Warning: Some reviews may contain spoilers!</p>
+            </div>
         </div>
     </div>
 </article>
+
