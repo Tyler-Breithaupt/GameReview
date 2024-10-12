@@ -4,6 +4,7 @@ using GameReview.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameReview.Migrations
 {
     [DbContext(typeof(GameContext))]
-    partial class GameContextModelSnapshot : ModelSnapshot
+    [Migration("20241011225723_MigrationName")]
+    partial class MigrationName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.35")
+                .HasAnnotation("ProductVersion", "6.0.33")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -97,32 +99,6 @@ namespace GameReview.Migrations
                     b.HasIndex("GameId");
 
                     b.ToTable("Reviews");
-
-                    b.HasData(
-                        new
-                        {
-                            ReviewId = 1,
-                            Content = "Incredible game with breathtaking visuals!",
-                            GameId = 1,
-                            Rating = 10,
-                            Reviewer = "JohnDoe"
-                        },
-                        new
-                        {
-                            ReviewId = 2,
-                            Content = "One of the best open-world experiences ever.",
-                            GameId = 2,
-                            Rating = 9,
-                            Reviewer = "JaneSmith"
-                        },
-                        new
-                        {
-                            ReviewId = 3,
-                            Content = "A beautiful and emotional journey. Highly recommend!",
-                            GameId = 3,
-                            Rating = 10,
-                            Reviewer = "Gamer123"
-                        });
                 });
 
             modelBuilder.Entity("GameReview.Models.Review", b =>

@@ -9,87 +9,90 @@ using GameReview.Models;
 
 namespace GameReview.Controllers
 {
-    public class GamesController : Controller
+    public class ReviewController : Controller
     {
         private readonly GameContext _context;
 
-        public GamesController(GameContext context)
+        public ReviewController(GameContext context)
         {
             _context = context;
         }
 
-        // GET: Games
+        // GET: Review
         public async Task<IActionResult> Index()
         {
-              return _context.Games != null ? 
-                          View(await _context.Games.ToListAsync()) :
-                          Problem("Entity set 'GameContext.Games'  is null.");
+            var gameContext = _context.Reviews.Include(r => r.Game);
+            return View(await gameContext.ToListAsync());
         }
 
-        // GET: Games/Details/5
+        // GET: Review/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Games == null)
+            if (id == null || _context.Reviews == null)
             {
                 return NotFound();
             }
 
-            var game = await _context.Games
-                .FirstOrDefaultAsync(m => m.GameId == id);
-            if (game == null)
+            var review = await _context.Reviews
+                .Include(r => r.Game)
+                .FirstOrDefaultAsync(m => m.ReviewId == id);
+            if (review == null)
             {
                 return NotFound();
             }
 
-            return View(game);
+            return View(review);
         }
 
-        // GET: Games/Create
+        // GET: Review/Create
         public IActionResult Create()
         {
+            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title");
             return View();
         }
 
-        // POST: Games/Create
+        // POST: Review/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Rating,Review")] Game game)
+        public async Task<IActionResult> Create([Bind("Content,Rating,Reviewer,GameId")] Review review)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(game);
+                _context.Add(review);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(game);
+            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            return View(review);
         }
 
-        // GET: Games/Edit/5
+        // GET: Review/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Games == null)
+            if (id == null || _context.Reviews == null)
             {
                 return NotFound();
             }
 
-            var game = await _context.Games.FindAsync(id);
-            if (game == null)
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
             {
                 return NotFound();
             }
-            return View(game);
+            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            return View(review);
         }
 
-        // POST: Games/Edit/5
+        // POST: Review/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Rating,Review")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("Content,Rating,Reviewer,GameId")] Review review)
         {
-            if (id != game.GameId)
+            if (id != review.ReviewId)
             {
                 return NotFound();
             }
@@ -98,12 +101,12 @@ namespace GameReview.Controllers
             {
                 try
                 {
-                    _context.Update(game);
+                    _context.Update(review);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GameExists(game.GameId))
+                    if (!ReviewExists(review.ReviewId))
                     {
                         return NotFound();
                     }
@@ -114,49 +117,51 @@ namespace GameReview.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(game);
+            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            return View(review);
         }
 
-        // GET: Games/Delete/5
+        // GET: Review/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Games == null)
+            if (id == null || _context.Reviews == null)
             {
                 return NotFound();
             }
 
-            var game = await _context.Games
-                .FirstOrDefaultAsync(m => m.GameId == id);
-            if (game == null)
+            var review = await _context.Reviews
+                .Include(r => r.Game)
+                .FirstOrDefaultAsync(m => m.ReviewId == id);
+            if (review == null)
             {
                 return NotFound();
             }
 
-            return View(game);
+            return View(review);
         }
 
-        // POST: Games/Delete/5
+        // POST: Review/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Games == null)
+            if (_context.Reviews == null)
             {
-                return Problem("Entity set 'GameContext.Games'  is null.");
+                return Problem("Entity set 'GameContext.Reviews'  is null.");
             }
-            var game = await _context.Games.FindAsync(id);
-            if (game != null)
+            var review = await _context.Reviews.FindAsync(id);
+            if (review != null)
             {
-                _context.Games.Remove(game);
+                _context.Reviews.Remove(review);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool GameExists(int id)
+        private bool ReviewExists(int id)
         {
-          return (_context.Games?.Any(e => e.GameId == id)).GetValueOrDefault();
+          return (_context.Reviews?.Any(e => e.ReviewId == id)).GetValueOrDefault();
         }
     }
 }

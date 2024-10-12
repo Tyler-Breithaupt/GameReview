@@ -22,7 +22,7 @@
                 @Html.DisplayNameFor(model => model.Rating)
             </th>
             <th class="text-light">
-                @Html.DisplayNameFor(model => model.Review)
+                @Html.DisplayNameFor(model => model.Reviews)
             </th>
             <th></th>
         </tr>
@@ -40,12 +40,12 @@
                 @Html.DisplayFor(modelItem => item.Rating)
             </td>
             <td class="text-light">
-                @Html.DisplayFor(modelItem => item.Review)
+                @Html.DisplayFor(modelItem => item.Reviews)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.GameId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.GameId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.GameId">Delete</a>
             </td>
         </tr>
 }
