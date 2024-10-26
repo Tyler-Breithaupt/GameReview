@@ -10,29 +10,29 @@
     <h4>Review</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Content)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Content)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Rating)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Rating)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Reviewer)
+        <dt class="col-sm-2">
+            Reviewer
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Reviewer)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Reviewer.Name) <!-- Display Reviewer's Name -->
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Game)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Game.Title)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Game.Title) <!-- Display Game Title -->
         </dd>
     </dl>
 </div>
@@ -40,3 +40,4 @@
     <a asp-action="Edit" asp-route-id="@Model?.ReviewId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+

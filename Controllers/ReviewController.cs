@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GameReview.Models;
+using System.Security.Claims;
 
 namespace GameReview.Controllers
 {
@@ -19,23 +20,24 @@ namespace GameReview.Controllers
         }
 
         // GET: Review
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var gameContext = _context.Reviews.Include(r => r.Game);
-            return View(await gameContext.ToListAsync());
+            var reviews = _context.Reviews
+                .Include(r => r.Game)        // Include the Game data
+                .Include(r => r.Reviewer)    // Include the Reviewer data
+                .ToList();
+            return View(reviews);
         }
 
-        // GET: Review/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Reviews == null)
-            {
-                return NotFound();
-            }
 
-            var review = await _context.Reviews
-                .Include(r => r.Game)
-                .FirstOrDefaultAsync(m => m.ReviewId == id);
+        // GET: Review/Details/5
+        public IActionResult Details(int id)
+        {
+            var review = _context.Reviews
+                .Include(r => r.Game)        // Include the Game data
+                .Include(r => r.Reviewer)    // Include the Reviewer data
+                .FirstOrDefault(r => r.ReviewId == id);
+
             if (review == null)
             {
                 return NotFound();
@@ -44,12 +46,15 @@ namespace GameReview.Controllers
             return View(review);
         }
 
+
         // GET: Review/Create
         public IActionResult Create()
         {
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title");
+            ViewBag.GameId = new SelectList(_context.Games, "GameId", "Title");
+            ViewBag.ReviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Or however you get the current user
             return View();
         }
+
 
         // POST: Review/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -69,21 +74,19 @@ namespace GameReview.Controllers
         }
 
         // GET: Review/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null || _context.Reviews == null)
-            {
-                return NotFound();
-            }
-
-            var review = await _context.Reviews.FindAsync(id);
+            var review = _context.Reviews.Find(id);
             if (review == null)
             {
                 return NotFound();
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+
+            ViewBag.GameId = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            ViewBag.ReviewerId = review.ReviewerId; // Set the ReviewerId from the existing review
             return View(review);
         }
+
 
         // POST: Review/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -145,17 +148,12 @@ namespace GameReview.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Reviews == null)
-            {
-                return Problem("Entity set 'GameContext.Reviews'  is null.");
-            }
             var review = await _context.Reviews.FindAsync(id);
             if (review != null)
             {
                 _context.Reviews.Remove(review);
+                await _context.SaveChangesAsync();
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

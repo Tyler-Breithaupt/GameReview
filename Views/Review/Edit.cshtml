@@ -13,6 +13,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ReviewId" />
+            <input type="hidden" asp-for="ReviewerId" value="@ViewBag.ReviewerId" /> <!-- Assuming you set the ReviewerId in the controller -->
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
                 <input asp-for="Content" class="form-control" />
@@ -22,11 +23,6 @@
                 <label asp-for="Rating" class="control-label"></label>
                 <input asp-for="Rating" class="form-control" />
                 <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reviewer" class="control-label"></label>
-                <input asp-for="Reviewer" class="form-control" />
-                <span asp-validation-for="Reviewer" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="GameId" class="control-label"></label>
@@ -45,5 +41,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+

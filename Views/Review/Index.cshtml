@@ -13,41 +13,43 @@
     <thead class="thead-light">
         <tr>
             <th class="text-light">
-                @Html.DisplayNameFor(model => model.Content)
+                @Html.DisplayNameFor(model => model.First().Content)
             </th>
             <th class="text-light">
-                @Html.DisplayNameFor(model => model.Rating)
+                @Html.DisplayNameFor(model => model.First().Rating)
             </th>
             <th class="text-light">
-                @Html.DisplayNameFor(model => model.Reviewer)
+                Reviewer
             </th>
             <th class="text-light">
-                @Html.DisplayNameFor(model => model.Game)
+                Game
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td class="text-light">
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td class="text-light">
-                @Html.DisplayFor(modelItem => item.Rating)
-            </td>
-            <td class="text-light">
-                @Html.DisplayFor(modelItem => item.Reviewer)
-            </td>
-            <td class="text-light">
-                @Html.DisplayFor(modelItem => item.Game.Title)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ReviewId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ReviewId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ReviewId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-light">
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td class="text-light">
+                    @Html.DisplayFor(modelItem => item.Rating)
+                </td>
+                <td class="text-light">
+                    @Html.DisplayFor(modelItem => item.Reviewer.Name) <!-- Display Reviewer's Name -->
+                </td>
+                <td class="text-light">
+                    @Html.DisplayFor(modelItem => item.Game.Title) <!-- Display Game Title -->
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ReviewId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ReviewId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ReviewId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+

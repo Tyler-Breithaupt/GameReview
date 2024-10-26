@@ -4,6 +4,7 @@ using GameReview.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameReview.Migrations
 {
     [DbContext(typeof(GameContext))]
-    partial class GameContextModelSnapshot : ModelSnapshot
+    [Migration("20241026213646_GameAndAnnotations")]
+    partial class GameAndAnnotations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,19 +85,20 @@ namespace GameReview.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("GameId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("GameId_FK");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReviewerId")
-                        .HasColumnType("int");
+                    b.Property<string>("Reviewer")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("ReviewId");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("ReviewerId");
 
                     b.ToTable("Reviews");
 
@@ -106,7 +109,7 @@ namespace GameReview.Migrations
                             Content = "Incredible game with breathtaking visuals!",
                             GameId = 1,
                             Rating = 10,
-                            ReviewerId = 1
+                            Reviewer = "JohnDoe"
                         },
                         new
                         {
@@ -114,7 +117,7 @@ namespace GameReview.Migrations
                             Content = "One of the best open-world experiences ever.",
                             GameId = 2,
                             Rating = 9,
-                            ReviewerId = 2
+                            Reviewer = "JaneSmith"
                         },
                         new
                         {
@@ -122,49 +125,7 @@ namespace GameReview.Migrations
                             Content = "A beautiful and emotional journey. Highly recommend!",
                             GameId = 3,
                             Rating = 10,
-                            ReviewerId = 3
-                        });
-                });
-
-            modelBuilder.Entity("GameReview.Models.Reviewer", b =>
-                {
-                    b.Property<int>("ReviewerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewerId"), 1L, 1);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("ReviewerId");
-
-                    b.ToTable("Reviewers");
-
-                    b.HasData(
-                        new
-                        {
-                            ReviewerId = 1,
-                            Email = "john.doe@example.com",
-                            Name = "John Doe"
-                        },
-                        new
-                        {
-                            ReviewerId = 2,
-                            Email = "jane.smith@example.com",
-                            Name = "Jane Smith"
-                        },
-                        new
-                        {
-                            ReviewerId = 3,
-                            Email = "gamer123@example.com",
-                            Name = "Gamer 123"
+                            Reviewer = "Gamer123"
                         });
                 });
 
@@ -176,23 +137,10 @@ namespace GameReview.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GameReview.Models.Reviewer", "Reviewer")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Game");
-
-                    b.Navigation("Reviewer");
                 });
 
             modelBuilder.Entity("GameReview.Models.Game", b =>
-                {
-                    b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("GameReview.Models.Reviewer", b =>
                 {
                     b.Navigation("Reviews");
                 });

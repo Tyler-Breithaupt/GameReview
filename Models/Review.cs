@@ -16,14 +16,18 @@ namespace GameReview.Models
         [Range(1, 10, ErrorMessage = "Rating must be between 1 and 10.")]
         public int Rating { get; set; }
 
-        [Required]
-        public string Reviewer { get; set; }
-
-        // Foreign key relationship with the Game model
-        [ForeignKey("Game")]
+        [Required(ErrorMessage = "Game selection is required.")]
+        [Display(Name = "Game")]
         public int GameId { get; set; }
 
-        // Navigation property
+        [Required(ErrorMessage = "Reviewer selection is required.")]
+        [Display(Name = "Reviewer")]
+        public int ReviewerId { get; set; }
+
+        [ForeignKey("GameId")]
         public Game Game { get; set; }
+
+        [ForeignKey("ReviewerId")]
+        public Reviewer Reviewer { get; set; }
     }
 }

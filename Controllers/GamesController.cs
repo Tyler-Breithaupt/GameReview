@@ -21,9 +21,8 @@ namespace GameReview.Controllers
         // GET: Games
         public async Task<IActionResult> Index()
         {
-              return _context.Games != null ? 
-                          View(await _context.Games.ToListAsync()) :
-                          Problem("Entity set 'GameContext.Games'  is null.");
+            var games = await _context.Games.Include(g => g.Reviews).ToListAsync(); // Use ToListAsync for async
+            return View(games);
         }
 
         // GET: Games/Details/5
@@ -35,6 +34,7 @@ namespace GameReview.Controllers
             }
 
             var game = await _context.Games
+                .Include(g => g.Reviews) // Include reviews for detail view
                 .FirstOrDefaultAsync(m => m.GameId == id);
             if (game == null)
             {
@@ -51,11 +51,9 @@ namespace GameReview.Controllers
         }
 
         // POST: Games/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Rating,Review")] Game game)
+        public async Task<IActionResult> Create([Bind("GameId,Title,ReleaseDate,Rating")] Game game)
         {
             if (ModelState.IsValid)
             {
@@ -83,11 +81,9 @@ namespace GameReview.Controllers
         }
 
         // POST: Games/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Rating,Review")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("GameId,Title,ReleaseDate,Rating")] Game game)
         {
             if (id != game.GameId)
             {
@@ -142,21 +138,22 @@ namespace GameReview.Controllers
         {
             if (_context.Games == null)
             {
-                return Problem("Entity set 'GameContext.Games'  is null.");
+                return Problem("Entity set 'GameContext.Games' is null.");
             }
             var game = await _context.Games.FindAsync(id);
             if (game != null)
             {
                 _context.Games.Remove(game);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool GameExists(int id)
         {
-          return (_context.Games?.Any(e => e.GameId == id)).GetValueOrDefault();
+            return (_context.Games?.Any(e => e.GameId == id)).GetValueOrDefault();
         }
     }
 }
+

@@ -12,16 +12,27 @@ namespace GameReview.Models
         public DbSet<Game> Games { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
+        public DbSet<Reviewer> Reviewers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // Game - Review relationship
             modelBuilder.Entity<Game>()
                 .HasMany(g => g.Reviews)
                 .WithOne(r => r.Game)
                 .HasForeignKey(r => r.GameId)
-                .OnDelete(DeleteBehavior.Cascade);  
+                .OnDelete(DeleteBehavior.Cascade);
 
+            // Reviewer - Review relationship
+            modelBuilder.Entity<Reviewer>()
+                .HasMany(r => r.Reviews)
+                .WithOne(r => r.Reviewer)
+                .HasForeignKey(r => r.ReviewerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Seed data for Game
             modelBuilder.Entity<Game>().HasData(
                 new Game
                 {
@@ -45,32 +56,57 @@ namespace GameReview.Models
                     Rating = 10
                 }
             );
+
+            // Seed data for Reviewer
+            modelBuilder.Entity<Reviewer>().HasData(
+                new Reviewer
+                {
+                    ReviewerId = 1,
+                    Name = "John Doe",
+                    Email = "john.doe@example.com"
+                },
+                new Reviewer
+                {
+                    ReviewerId = 2,
+                    Name = "Jane Smith",
+                    Email = "jane.smith@example.com"
+                },
+                new Reviewer
+                {
+                    ReviewerId = 3,
+                    Name = "Gamer 123",
+                    Email = "gamer123@example.com"
+                }
+            );
+
+            // Seed data for Review, with ReviewerId
             modelBuilder.Entity<Review>().HasData(
                 new Review
                 {
                     ReviewId = 1,
                     Content = "Incredible game with breathtaking visuals!",
                     Rating = 10,
-                    Reviewer = "JohnDoe",
-                    GameId = 1
+                    GameId = 1,
+                    ReviewerId = 1
                 },
                 new Review
                 {
                     ReviewId = 2,
                     Content = "One of the best open-world experiences ever.",
                     Rating = 9,
-                    Reviewer = "JaneSmith",
-                    GameId = 2
+                    GameId = 2,
+                    ReviewerId = 2
                 },
                 new Review
                 {
                     ReviewId = 3,
                     Content = "A beautiful and emotional journey. Highly recommend!",
                     Rating = 10,
-                    Reviewer = "Gamer123",
-                    GameId = 3
+                    GameId = 3,
+                    ReviewerId = 3
                 }
             );
         }
+
     }
 }
