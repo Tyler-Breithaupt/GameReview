@@ -9,28 +9,16 @@ namespace GameReview.Models
         {
         }
 
-        public DbSet<Game> Games { get; set; }
-        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Game> Games { get; set; } = null!;
+        public DbSet<Review> Reviews { get; set; } = null!;
 
-        public DbSet<Reviewer> Reviewers { get; set; }
+        public DbSet<Reviewer> Reviewers { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Game - Review relationship
-            modelBuilder.Entity<Game>()
-                .HasMany(g => g.Reviews)
-                .WithOne(r => r.Game)
-                .HasForeignKey(r => r.GameId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Reviewer - Review relationship
-            modelBuilder.Entity<Reviewer>()
-                .HasMany(r => r.Reviews)
-                .WithOne(r => r.Reviewer)
-                .HasForeignKey(r => r.ReviewerId)
-                .OnDelete(DeleteBehavior.Cascade);
+            
 
             // Seed data for Game
             modelBuilder.Entity<Game>().HasData(
@@ -38,22 +26,22 @@ namespace GameReview.Models
                 {
                     GameId = 1,
                     Title = "The Legend of Zelda: Breath of the Wild",
-                    ReleaseDate = new DateTime(2017, 3, 3),
-                    Rating = 10
+                    ReleaseDate = new DateTime(2017, 3, 3)
+                    
                 },
                 new Game
                 {
                     GameId = 2,
                     Title = "Red Dead Redemption 2",
-                    ReleaseDate = new DateTime(2018, 10, 26),
-                    Rating = 9
+                    ReleaseDate = new DateTime(2018, 10, 26)
+                    
                 },
                 new Game
                 {
                     GameId = 3,
                     Title = "God of War",
-                    ReleaseDate = new DateTime(2018, 4, 20),
-                    Rating = 10
+                    ReleaseDate = new DateTime(2018, 4, 20)
+                    
                 }
             );
 
@@ -64,12 +52,14 @@ namespace GameReview.Models
                     ReviewerId = 1,
                     Name = "John Doe",
                     Email = "john.doe@example.com"
+                   
                 },
                 new Reviewer
                 {
                     ReviewerId = 2,
                     Name = "Jane Smith",
                     Email = "jane.smith@example.com"
+
                 },
                 new Reviewer
                 {

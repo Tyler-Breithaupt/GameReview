@@ -10,7 +10,7 @@ namespace GameReview.Models
 
         [Required]
         [StringLength(500, ErrorMessage = "The review content cannot exceed 500 characters.")]
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
 
         [Required]
         [Range(1, 10, ErrorMessage = "Rating must be between 1 and 10.")]
@@ -24,10 +24,10 @@ namespace GameReview.Models
         [Display(Name = "Reviewer")]
         public int ReviewerId { get; set; }
 
-        [ForeignKey("GameId")]
-        public Game Game { get; set; }
+       
+        public Game? Game { get; set; } 
 
-        [ForeignKey("ReviewerId")]
-        public Reviewer Reviewer { get; set; }
+        
+        public Reviewer? Reviewer { get; set; }
     }
 }

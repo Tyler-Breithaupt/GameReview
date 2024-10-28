@@ -30,9 +30,6 @@ namespace GameReview.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"), 1L, 1);
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
 
@@ -49,21 +46,18 @@ namespace GameReview.Migrations
                         new
                         {
                             GameId = 1,
-                            Rating = 10,
                             ReleaseDate = new DateTime(2017, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Legend of Zelda: Breath of the Wild"
                         },
                         new
                         {
                             GameId = 2,
-                            Rating = 9,
                             ReleaseDate = new DateTime(2018, 10, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Red Dead Redemption 2"
                         },
                         new
                         {
                             GameId = 3,
-                            Rating = 10,
                             ReleaseDate = new DateTime(2018, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "God of War"
                         });

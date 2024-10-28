@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameReview.Migrations
 {
     [DbContext(typeof(GameContext))]
-    [Migration("20241026213646_GameAndAnnotations")]
-    partial class GameAndAnnotations
+    [Migration("20241028002755_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,9 +32,6 @@ namespace GameReview.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"), 1L, 1);
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
 
@@ -51,21 +48,18 @@ namespace GameReview.Migrations
                         new
                         {
                             GameId = 1,
-                            Rating = 10,
                             ReleaseDate = new DateTime(2017, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Legend of Zelda: Breath of the Wild"
                         },
                         new
                         {
                             GameId = 2,
-                            Rating = 9,
                             ReleaseDate = new DateTime(2018, 10, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Red Dead Redemption 2"
                         },
                         new
                         {
                             GameId = 3,
-                            Rating = 10,
                             ReleaseDate = new DateTime(2018, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "God of War"
                         });
@@ -85,20 +79,19 @@ namespace GameReview.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("GameId")
-                        .HasColumnType("int")
-                        .HasColumnName("GameId_FK");
+                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<string>("Reviewer")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("ReviewerId")
+                        .HasColumnType("int");
 
                     b.HasKey("ReviewId");
 
                     b.HasIndex("GameId");
+
+                    b.HasIndex("ReviewerId");
 
                     b.ToTable("Reviews");
 
@@ -109,7 +102,7 @@ namespace GameReview.Migrations
                             Content = "Incredible game with breathtaking visuals!",
                             GameId = 1,
                             Rating = 10,
-                            Reviewer = "JohnDoe"
+                            ReviewerId = 1
                         },
                         new
                         {
@@ -117,7 +110,7 @@ namespace GameReview.Migrations
                             Content = "One of the best open-world experiences ever.",
                             GameId = 2,
                             Rating = 9,
-                            Reviewer = "JaneSmith"
+                            ReviewerId = 2
                         },
                         new
                         {
@@ -125,7 +118,49 @@ namespace GameReview.Migrations
                             Content = "A beautiful and emotional journey. Highly recommend!",
                             GameId = 3,
                             Rating = 10,
-                            Reviewer = "Gamer123"
+                            ReviewerId = 3
+                        });
+                });
+
+            modelBuilder.Entity("GameReview.Models.Reviewer", b =>
+                {
+                    b.Property<int>("ReviewerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewerId"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ReviewerId");
+
+                    b.ToTable("Reviewers");
+
+                    b.HasData(
+                        new
+                        {
+                            ReviewerId = 1,
+                            Email = "john.doe@example.com",
+                            Name = "John Doe"
+                        },
+                        new
+                        {
+                            ReviewerId = 2,
+                            Email = "jane.smith@example.com",
+                            Name = "Jane Smith"
+                        },
+                        new
+                        {
+                            ReviewerId = 3,
+                            Email = "gamer123@example.com",
+                            Name = "Gamer 123"
                         });
                 });
 
@@ -137,10 +172,23 @@ namespace GameReview.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GameReview.Models.Reviewer", "Reviewer")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Game");
+
+                    b.Navigation("Reviewer");
                 });
 
             modelBuilder.Entity("GameReview.Models.Game", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("GameReview.Models.Reviewer", b =>
                 {
                     b.Navigation("Reviews");
                 });

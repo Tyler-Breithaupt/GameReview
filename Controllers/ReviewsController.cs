@@ -6,38 +6,37 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GameReview.Models;
-using System.Security.Claims;
 
 namespace GameReview.Controllers
 {
-    public class ReviewController : Controller
+    public class ReviewsController : Controller
     {
         private readonly GameContext _context;
 
-        public ReviewController(GameContext context)
+        public ReviewsController(GameContext context)
         {
             _context = context;
         }
 
-        // GET: Review
-        public IActionResult Index()
+        // GET: Reviews
+        public async Task<IActionResult> Index()
         {
-            var reviews = _context.Reviews
-                .Include(r => r.Game)        // Include the Game data
-                .Include(r => r.Reviewer)    // Include the Reviewer data
-                .ToList();
-            return View(reviews);
+            var gameContext = _context.Reviews.Include(r => r.Game).Include(r => r.Reviewer);
+            return View(await gameContext.ToListAsync());
         }
 
-
-        // GET: Review/Details/5
-        public IActionResult Details(int id)
+        // GET: Reviews/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            var review = _context.Reviews
-                .Include(r => r.Game)        // Include the Game data
-                .Include(r => r.Reviewer)    // Include the Reviewer data
-                .FirstOrDefault(r => r.ReviewId == id);
+            if (id == null || _context.Reviews == null)
+            {
+                return NotFound();
+            }
 
+            var review = await _context.Reviews
+                .Include(r => r.Game)
+                .Include(r => r.Reviewer)
+                .FirstOrDefaultAsync(m => m.ReviewId == id);
             if (review == null)
             {
                 return NotFound();
@@ -46,22 +45,20 @@ namespace GameReview.Controllers
             return View(review);
         }
 
-
-        // GET: Review/Create
+        // GET: Reviews/Create
         public IActionResult Create()
         {
-            ViewBag.GameId = new SelectList(_context.Games, "GameId", "Title");
-            ViewBag.ReviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Or however you get the current user
+            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title");
+            ViewData["ReviewerId"] = new SelectList(_context.Reviewers, "ReviewerId", "Email");
             return View();
         }
 
-
-        // POST: Review/Create
+        // POST: Reviews/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Content,Rating,Reviewer,GameId")] Review review)
+        public async Task<IActionResult> Create([Bind("ReviewId,Content,Rating,GameId,ReviewerId")] Review review)
         {
             if (ModelState.IsValid)
             {
@@ -70,30 +67,34 @@ namespace GameReview.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            ViewData["ReviewerId"] = new SelectList(_context.Reviewers, "ReviewerId", "Email", review.ReviewerId);
             return View(review);
         }
 
-        // GET: Review/Edit/5
-        public IActionResult Edit(int id)
+        // GET: Reviews/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            var review = _context.Reviews.Find(id);
-            if (review == null)
+            if (id == null || _context.Reviews == null)
             {
                 return NotFound();
             }
 
-            ViewBag.GameId = new SelectList(_context.Games, "GameId", "Title", review.GameId);
-            ViewBag.ReviewerId = review.ReviewerId; // Set the ReviewerId from the existing review
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
+            {
+                return NotFound();
+            }
+            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            ViewData["ReviewerId"] = new SelectList(_context.Reviewers, "ReviewerId", "Email", review.ReviewerId);
             return View(review);
         }
 
-
-        // POST: Review/Edit/5
+        // POST: Reviews/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Content,Rating,Reviewer,GameId")] Review review)
+        public async Task<IActionResult> Edit(int id, [Bind("ReviewId,Content,Rating,GameId,ReviewerId")] Review review)
         {
             if (id != review.ReviewId)
             {
@@ -121,10 +122,11 @@ namespace GameReview.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "Title", review.GameId);
+            ViewData["ReviewerId"] = new SelectList(_context.Reviewers, "ReviewerId", "Email", review.ReviewerId);
             return View(review);
         }
 
-        // GET: Review/Delete/5
+        // GET: Reviews/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Reviews == null)
@@ -134,6 +136,7 @@ namespace GameReview.Controllers
 
             var review = await _context.Reviews
                 .Include(r => r.Game)
+                .Include(r => r.Reviewer)
                 .FirstOrDefaultAsync(m => m.ReviewId == id);
             if (review == null)
             {
@@ -143,17 +146,22 @@ namespace GameReview.Controllers
             return View(review);
         }
 
-        // POST: Review/Delete/5
+        // POST: Reviews/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (_context.Reviews == null)
+            {
+                return Problem("Entity set 'GameContext.Reviews'  is null.");
+            }
             var review = await _context.Reviews.FindAsync(id);
             if (review != null)
             {
                 _context.Reviews.Remove(review);
-                await _context.SaveChangesAsync();
             }
+            
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
