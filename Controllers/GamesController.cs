@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GameReview.Models;
+using GameReview.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameReview.Controllers
 {
+    [Authorize]
     public class GamesController : Controller
     {
         private readonly GameContext _context;
@@ -19,12 +22,53 @@ namespace GameReview.Controllers
         }
 
         // GET: Games
-        public async Task<IActionResult> Index()
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
-              return _context.Games != null ? 
-                          View(await _context.Games.ToListAsync()) :
-                          Problem("Entity set 'GameContext.Games'  is null.");
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if (searchString != null)
+            {
+                pageNumber = 1; // Reset to the first page when a new search is performed.
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var games = from g in _context.Games
+                        select g;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                games = games.Where(g => g.Title.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    games = games.OrderByDescending(g => g.Title);
+                    break;
+                case "Date":
+                    games = games.OrderBy(g => g.ReleaseDate);
+                    break;
+                case "date_desc":
+                    games = games.OrderByDescending(g => g.ReleaseDate);
+                    break;
+                default:
+                    games = games.OrderBy(g => g.Title);
+                    break;
+            }
+
+            int pageSize = 5;
+            return View(await PaginatedList<Game>.CreateAsync(games.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+
 
         // GET: Games/Details/5
         public async Task<IActionResult> Details(int? id)

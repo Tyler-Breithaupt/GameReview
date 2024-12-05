@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GameReview.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameReview.Controllers
 {
+    [Authorize]
     public class ReviewersController : Controller
     {
         private readonly GameContext _context;
@@ -19,6 +21,7 @@ namespace GameReview.Controllers
         }
 
         // GET: Reviewers
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
               return _context.Reviewers != null ? 

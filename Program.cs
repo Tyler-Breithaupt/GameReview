@@ -19,6 +19,16 @@ namespace GameReview
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                // Default Password Settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 10;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
